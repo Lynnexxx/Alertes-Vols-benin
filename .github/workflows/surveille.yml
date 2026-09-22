@@ -1,0 +1,26 @@
+name: Surveillance billets Benin
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"   # toutes les 10 minutes (GitHub peut décaler de quelques minutes)
+  workflow_dispatch:          # permet de lancer à la main depuis l'onglet Actions
+    inputs:
+      test:
+        description: "Envoyer un email de test"
+        type: boolean
+        default: false
+
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Vérifier la page
+        env:
+          EMAIL_EXPEDITEUR: ${{ secrets.EMAIL_EXPEDITEUR }}
+          EMAIL_MOT_DE_PASSE: ${{ secrets.EMAIL_MOT_DE_PASSE }}
+          EMAIL_DESTINATAIRE: ${{ secrets.EMAIL_DESTINATAIRE }}
+        run: python surveille_benin.py ${{ inputs.test && '--test' || '' }}
